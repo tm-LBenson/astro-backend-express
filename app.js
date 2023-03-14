@@ -6,7 +6,7 @@ const cors = require('cors');
 const handle404Error = require('./src/middleware/404');
 const handle500Error = require('./src/middleware/500');
 const router = require('./src/routes/routes');
-
+require('dotenv').config();
 // Enable Cors on all routes
 app.use(cors());
 
