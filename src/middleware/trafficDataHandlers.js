@@ -28,7 +28,7 @@ const incrementVisits = async (req, res, next) => {
     }
 
     await site.save();
-    console.log('Updated Site:', site); // Add console.log here
+   
     next();
   } catch (error) {
     next(error);
@@ -43,7 +43,7 @@ const incrementDailyTotal = async (req, res, next) => {
       { $inc: { visits: 1 } },
       { upsert: true },
     );
-    console.log('Updated DailyTotal:', updatedDailyTotal); // Add console.log here
+
     next();
   } catch (error) {
     next(error);
