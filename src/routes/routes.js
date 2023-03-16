@@ -10,6 +10,7 @@ const {
   handleScreenSize,
   handleIpAddress,
 } = require('../middleware/trafficDataHandlers');
+const formatDateMiddleware = require('../middleware/formatDate');
 const router = express.Router();
 
 router.route('/').get(proofOfLife);
@@ -17,6 +18,7 @@ router.route('/contact').post(contact);
 router
   .route('/traffic-data')
   .post(
+    formatDateMiddleware,
     validateTrafficData,
     incrementVisits,
     incrementDailyTotal,

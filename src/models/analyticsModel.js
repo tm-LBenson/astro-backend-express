@@ -5,6 +5,11 @@ const screenSizeSchema = new mongoose.Schema({
   count: Number,
 });
 
+const ipAddressSchema = new mongoose.Schema({
+  address: String,
+  count: Number,
+});
+
 const trafficDataSchema = new mongoose.Schema({
   date: Date,
   visits: { type: Number, default: 0 },
@@ -14,7 +19,7 @@ const trafficDataSchema = new mongoose.Schema({
     tablet: { type: Number, default: 0 },
   },
   screenSizes: [screenSizeSchema],
-  ipAddresses: [String],
+  ipAddresses: [ipAddressSchema],
 });
 
 const siteSchema = new mongoose.Schema({
