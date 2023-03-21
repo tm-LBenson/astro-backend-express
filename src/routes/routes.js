@@ -1,6 +1,6 @@
 const express = require('express');
 const proofOfLife = require('../controllers/proofOfLife');
-const trafficData = require('../controllers/trafficData');
+const { trafficData, getTrafficData } = require('../controllers/trafficData');
 const contact = require('../controllers/contact');
 const validateTrafficData = require('../middleware/validateTrafficData');
 const {
@@ -26,6 +26,7 @@ router
     handleScreenSize,
     handleIpAddress,
     trafficData,
-  );
+  )
+  .get(getTrafficData);
 
 module.exports = router;
