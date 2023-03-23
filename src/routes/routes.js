@@ -14,7 +14,7 @@ const formatDateMiddleware = require('../middleware/formatDate');
 const { loginUser, registerUser } = require('../controllers/authController');
 
 const authenticateUser = require('../middleware/authMiddleware');
-const validateClientID = require('../middleware/validateClientId');
+const validateClientId = require('../middleware/validateClientId');
 const router = express.Router();
 
 router.route('/').get(proofOfLife);
@@ -22,7 +22,7 @@ router.route('/contact').post(contact);
 router
   .route('/traffic-data')
   .post(
-    validateClientID,
+    validateClientId,
     formatDateMiddleware,
     validateTrafficData,
     incrementVisits,
