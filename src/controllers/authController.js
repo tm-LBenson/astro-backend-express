@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const User = require('../models/analyticsModel');
-
+const { User } = require('../models/analyticsModel');
+const crypto = require('crypto');
 const loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -42,7 +42,7 @@ const registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const clientID = crypto.randomUUID();
-
+    console.log(clientID);
     const newUser = new User({
       username,
       password: hashedPassword,
