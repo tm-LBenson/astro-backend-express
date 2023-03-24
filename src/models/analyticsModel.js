@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   sites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Site' }],
-  clientId: { type: String, unique: true },
+  clientId: { type: String, unique: true, required: true },
 });
 
 const Site = mongoose.model('Site', siteSchema);

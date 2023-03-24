@@ -41,17 +41,17 @@ const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const clientID = crypto.randomUUID();
-    console.log(clientID);
+    const clientId = crypto.randomUUID();
+    console.log(clientId);
     const newUser = new User({
       username,
       password: hashedPassword,
-      clientID,
+      clientId,
     });
 
     await newUser.save();
 
-    res.status(201).json({ message: 'User created successfully', clientID });
+    res.status(201).json({ message: 'User created successfully', clientId });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
