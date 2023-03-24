@@ -1,5 +1,5 @@
 // middleware/trafficDataHandlers.js
-const { Site, DailyTotal } = require('../models/analyticsModel');
+const { Site, DailyTotal, User } = require('../models/analyticsModel');
 
 const incrementVisits = async (req, res, next) => {
   try {
