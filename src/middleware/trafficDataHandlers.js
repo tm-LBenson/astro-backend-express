@@ -5,6 +5,7 @@ const incrementVisits = async (req, res, next) => {
   try {
     const { siteName, date } = req.body;
     const user = await User.findOne({ username: req.user.username });
+    console.log(user);
     let site = await Site.findOne({ name: siteName, 'traffic.date': date });
 
     if (!site) {
@@ -21,6 +22,9 @@ const incrementVisits = async (req, res, next) => {
         ],
         user: user._id,
       });
+
+      user.sites.push(site._id);
+      await user.save();
     } else {
       const trafficData = site.traffic.find(
         (t) => t.date.toISOString() === date,
@@ -125,7 +129,11 @@ const handleIpAddress = async (req, res, next) => {
 const getUserSites = async (req, res) => {
   try {
     const { username } = req.user;
-    const user = await User.findOne({ username }).populate('sites');
+    const user = await User.findOne({ username }).populate({
+      path: 'sites',
+      populate: { path: 'user', model: 'User' },
+    });
+    console.log(user);
     res.json(user.sites);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching user sites.', error });

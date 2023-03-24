@@ -25,7 +25,7 @@ const trafficDataSchema = new mongoose.Schema({
 const siteSchema = new mongoose.Schema({
   name: String,
   traffic: [trafficDataSchema],
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
 const dailyTotalSchema = new mongoose.Schema({
