@@ -5,6 +5,7 @@ const incrementVisits = async (req, res, next) => {
   try {
     const { siteName, date } = req.body;
     const user = await User.findOne({ username: req.user.username });
+    console.log(user);
     let site = await Site.findOne({ name: siteName, 'traffic.date': date });
 
     if (!site) {
