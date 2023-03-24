@@ -9,6 +9,7 @@ const {
   handleDeviceType,
   handleScreenSize,
   handleIpAddress,
+  getUserSites,
 } = require('../middleware/trafficDataHandlers');
 const formatDateMiddleware = require('../middleware/formatDate');
 const { loginUser, registerUser } = require('../controllers/authController');
@@ -33,6 +34,7 @@ router
     trafficData,
   )
   .get(authenticateUser, getTrafficData);
+router.get('/user-sites', authenticateUser, getUserSites);
 router.post('/login', loginUser);
 router.post('/signup', registerUser);
 module.exports = router;

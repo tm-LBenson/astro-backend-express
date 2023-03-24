@@ -5,15 +5,15 @@ const crypto = require('crypto');
 
 const loginUser = async (req, res) => {
   try {
-    const { username, password } = req.body;
-
-    const user = await User.findOne({ username });
-
+    const user = await User.findOne({ username: req.body.username });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(
+      req.body.password,
+      user.password,
+    );
 
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Incorrect password' });

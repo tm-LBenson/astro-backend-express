@@ -4,7 +4,7 @@ const { Site, DailyTotal } = require('../models/analyticsModel');
 const incrementVisits = async (req, res, next) => {
   try {
     const { siteName, date } = req.body;
-
+    const user = await User.findOne({ username: req.user.username });
     let site = await Site.findOne({ name: siteName, 'traffic.date': date });
 
     if (!site) {
@@ -19,6 +19,7 @@ const incrementVisits = async (req, res, next) => {
             ipAddresses: [],
           },
         ],
+        user: user._id,
       });
     } else {
       const trafficData = site.traffic.find(
@@ -28,7 +29,7 @@ const incrementVisits = async (req, res, next) => {
     }
 
     await site.save();
-   
+
     next();
   } catch (error) {
     next(error);
@@ -121,10 +122,21 @@ const handleIpAddress = async (req, res, next) => {
   }
 };
 
+const getUserSites = async (req, res) => {
+  try {
+    const { username } = req.user;
+    const user = await User.findOne({ username }).populate('sites');
+    res.json(user.sites);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user sites.', error });
+  }
+};
+
 module.exports = {
   incrementVisits,
   handleDeviceType,
   handleScreenSize,
   handleIpAddress,
   incrementDailyTotal,
+  getUserSites,
 };
