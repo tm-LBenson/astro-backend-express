@@ -5,8 +5,8 @@ const incrementVisits = async (req, res, next) => {
   try {
     const { siteName, date } = req.body;
     const user = await User.findOne({ username: req.user.username });
-    console.log(user);
-    let site = await Site.findOne({ name: siteName, 'traffic.date': date });
+
+    let site = await Site.findOne({ name: siteName, user: user._id });
 
     if (!site) {
       site = new Site({
@@ -27,9 +27,19 @@ const incrementVisits = async (req, res, next) => {
       await user.save();
     } else {
       const trafficData = site.traffic.find(
-        (t) => t.date.toISOString() === date,
+        (t) => t.date.toISOString().split('T')[0] === date,
       );
-      trafficData.visits++;
+      if (trafficData) {
+        trafficData.visits++;
+      } else {
+        site.traffic.push({
+          date,
+          visits: 1,
+          deviceTypes: { desktop: 0, mobile: 0, tablet: 0 },
+          screenSizes: [],
+          ipAddresses: [],
+        });
+      }
     }
 
     await site.save();
@@ -129,12 +139,15 @@ const handleIpAddress = async (req, res, next) => {
 const getUserSites = async (req, res) => {
   try {
     const { username } = req.user;
-    const user = await User.findOne({ username }).populate({
-      path: 'sites',
-      populate: { path: 'user', model: 'User' },
-    });
-    console.log(user);
-    res.json(user.sites);
+    const user = await User.findOne({ username });
+
+    if (user) {
+      const sites = await Site.find({ _id: { $in: user.sites } });
+
+      res.status(200).json(sites);
+    } else {
+      res.status(404).json({ message: 'User not found.' });
+    }
   } catch (error) {
     res.status(500).json({ message: 'Error fetching user sites.', error });
   }
