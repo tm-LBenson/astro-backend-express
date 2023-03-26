@@ -4,12 +4,8 @@ const { trafficData, getTrafficData } = require('../controllers/trafficData');
 const contact = require('../controllers/contact');
 const validateTrafficData = require('../middleware/validateTrafficData');
 const {
-  incrementVisits,
-  incrementDailyTotal,
-  handleDeviceType,
-  handleScreenSize,
-  handleIpAddress,
   getUserSites,
+  updateSiteData,
 } = require('../middleware/trafficDataHandlers');
 const formatDateMiddleware = require('../middleware/formatDate');
 const { loginUser, registerUser } = require('../controllers/authController');
@@ -26,11 +22,7 @@ router
     validateClientId,
     formatDateMiddleware,
     validateTrafficData,
-    incrementVisits,
-    incrementDailyTotal,
-    handleDeviceType,
-    handleScreenSize,
-    handleIpAddress,
+    updateSiteData,
     trafficData,
   )
   .get(authenticateUser, getTrafficData);
