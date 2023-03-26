@@ -21,27 +21,50 @@ const updateSiteData = async (req, res, next) => {
     }
 
     const today = new Date(date).setUTCHours(0, 0, 0, 0);
-    const trafficEntry = await Site.findOneAndUpdate(
-      {
-        name: siteName,
-        user: user._id,
-        'traffic.date': today,
-        'traffic.ipAddresses.address': ipAddress,
-      },
-      {
-        $inc: {
-          'traffic.$.visits': 1,
-          [`traffic.$.deviceTypes.${deviceType}`]: 1,
-          'traffic.$.ipAddresses.$[ip].count': 1,
-        },
-      },
-      {
-        arrayFilters: [{ 'ip.address': ipAddress }],
-        new: true,
-      },
-    );
+    const trafficEntry = await Site.findOne({
+      name: siteName,
+      user: user._id,
+      'traffic.date': today,
+    });
 
-    if (!trafficEntry) {
+    if (trafficEntry) {
+      const ipIndex = trafficEntry.traffic[0].ipAddresses.findIndex(
+        (ip) => ip.address === ipAddress,
+      );
+      const screenSizeIndex = trafficEntry.traffic[0].screenSizes.findIndex(
+        (size) => size.size === sizeString,
+      );
+
+      if (ipIndex !== -1) {
+        trafficEntry.traffic[0].ipAddresses[ipIndex].count += 1;
+        trafficEntry.traffic[0].visits += 1;
+        trafficEntry.traffic[0].deviceTypes[deviceType] += 1;
+
+        if (screenSizeIndex !== -1) {
+          trafficEntry.traffic[0].screenSizes[screenSizeIndex].count += 1;
+        } else {
+          trafficEntry.traffic[0].screenSizes.push({
+            size: sizeString,
+            count: 1,
+          });
+        }
+
+        await trafficEntry.save();
+      } else {
+        trafficEntry.traffic[0].ipAddresses.push({
+          address: ipAddress,
+          count: 1,
+        });
+        trafficEntry.traffic[0].screenSizes.push({
+          size: sizeString,
+          count: 1,
+        });
+        trafficEntry.traffic[0].visits += 1;
+        trafficEntry.traffic[0].deviceTypes[deviceType] += 1;
+
+        await trafficEntry.save();
+      }
+    } else {
       site.traffic.push({
         date,
         visits: 1,
