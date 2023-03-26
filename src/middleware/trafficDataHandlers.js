@@ -8,8 +8,20 @@ const updateSiteData = async (req, res, next) => {
 
     const sizeString = `${screenSize.width}x${screenSize.height}`;
 
-    const site = await Site.findOneAndUpdate(
-      { name: siteName, user: user._id, 'traffic.date': date },
+    let site = await Site.findOne({ name: siteName, user: user._id });
+
+    if (!site) {
+      site = new Site({
+        name: siteName,
+        traffic: [],
+        user: user._id,
+      });
+      user.sites.push(site._id);
+      await user.save();
+    }
+
+    const trafficEntry = await Site.findOneAndUpdate(
+      { _id: site._id, 'traffic.date': date },
       {
         $inc: {
           'traffic.$.visits': 1,
@@ -23,23 +35,15 @@ const updateSiteData = async (req, res, next) => {
       { new: true },
     );
 
-    if (!site) {
-      const newSite = new Site({
-        name: siteName,
-        traffic: [
-          {
-            date,
-            visits: 1,
-            deviceTypes: { [deviceType]: 1 },
-            screenSizes: [{ size: sizeString, count: 1 }],
-            ipAddresses: [{ address: ipAddress, count: 1 }],
-          },
-        ],
-        user: user._id,
+    if (!trafficEntry) {
+      site.traffic.push({
+        date,
+        visits: 1,
+        deviceTypes: { [deviceType]: 1 },
+        screenSizes: [{ size: sizeString, count: 1 }],
+        ipAddresses: [{ address: ipAddress, count: 1 }],
       });
-
-      user.sites.push(newSite._id);
-      await Promise.all([newSite.save(), user.save()]);
+      await site.save();
     }
 
     next();
