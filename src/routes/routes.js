@@ -12,6 +12,7 @@ const { loginUser, registerUser } = require('../controllers/authController');
 
 const authenticateUser = require('../middleware/authMiddleware');
 const validateClientId = require('../middleware/validateClientId');
+const deleteDuplicateSites = require('../middleware/deleteDuplicateSites');
 const router = express.Router();
 
 router.route('/').get(proofOfLife);
