@@ -21,18 +21,22 @@ const updateSiteData = async (req, res, next) => {
     }
 
     const trafficEntry = await Site.findOneAndUpdate(
-      { _id: site._id, 'traffic.date': date },
+      {
+        _id: site._id,
+        'traffic.date': date,
+        'traffic.ipAddresses.address': ipAddress,
+      },
       {
         $inc: {
           'traffic.$.visits': 1,
           [`traffic.$.deviceTypes.${deviceType}`]: 1,
-        },
-        $addToSet: {
-          'traffic.$.screenSizes': { size: sizeString, count: 1 },
-          'traffic.$.ipAddresses': { address: ipAddress, count: 1 },
+          'traffic.$[ip].count': 1,
         },
       },
-      { new: true },
+      {
+        arrayFilters: [{ 'ip.address': ipAddress }],
+        new: true,
+      },
     );
 
     if (!trafficEntry) {
