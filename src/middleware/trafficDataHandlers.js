@@ -24,11 +24,9 @@ const incrementVisits = async (req, res, next) => {
       });
 
       user.sites.push(site._id);
-      await user.save();
     } else {
       const trafficData = site.traffic.find(
-        (t) =>
-          t.name === siteName && t.date.toISOString().split('T')[0] === date,
+        (t) => t.date.toISOString().split('T')[0] === date,
       );
 
       if (trafficData) {
@@ -45,6 +43,7 @@ const incrementVisits = async (req, res, next) => {
     }
 
     await site.save();
+    await user.save();
 
     next();
   } catch (error) {
@@ -55,7 +54,7 @@ const incrementVisits = async (req, res, next) => {
 const incrementDailyTotal = async (req, res, next) => {
   try {
     const { date } = req.body;
-    const updatedDailyTotal = await DailyTotal.updateOne(
+    await DailyTotal.updateOne(
       { date },
       { $inc: { visits: 1 } },
       { upsert: true },
@@ -90,11 +89,9 @@ const handleDeviceType = async (req, res, next) => {
       });
 
       user.sites.push(site._id);
-      await user.save();
     } else {
       const trafficData = site.traffic.find(
-        (t) =>
-          t.name === siteName && t.date.toISOString().split('T')[0] === date,
+        (t) => t.date.toISOString().split('T')[0] === date,
       );
 
       if (trafficData) {
@@ -112,6 +109,7 @@ const handleDeviceType = async (req, res, next) => {
     }
 
     await site.save();
+    await user.save();
 
     next();
   } catch (error) {
@@ -124,12 +122,31 @@ const handleScreenSize = async (req, res, next) => {
     const { siteName, date, screenSize } = req.body;
     const sizeString = `${screenSize.width}x${screenSize.height}`;
 
-    const site = await Site.findOne({ name: siteName, 'traffic.date': date });
+    const user = await User.findOne({ username: req.user.username });
+    let site = await Site.findOne({ name: siteName, user: user._id });
 
-    if (site) {
+    if (!site) {
+      site = new Site({
+        name: siteName,
+        traffic: [
+          {
+            date,
+            visits: 1,
+            deviceTypes: { desktop: 0, mobile: 0, tablet: 0 },
+            screenSizes: [{ size: sizeString, count: 1 }],
+            ipAddresses: [],
+          },
+        ],
+        user: user._id,
+      });
+      user.sites.push(site._id);
+      await user.save();
+    } else {
       const trafficData = site.traffic.find(
-        (t) => t.date.toISOString() === date,
+        (t) =>
+          t.name === siteName && t.date.toISOString().split('T')[0] === date,
       );
+
       if (trafficData) {
         const screenSizeData = trafficData.screenSizes.find(
           (s) => s.size === sizeString,
@@ -139,9 +156,7 @@ const handleScreenSize = async (req, res, next) => {
         } else {
           trafficData.screenSizes.push({ size: sizeString, count: 1 });
         }
-        await site.save();
       } else {
-        // If trafficData is not found, create new trafficData object with the new screen size data
         site.traffic.push({
           date,
           visits: 1,
@@ -149,9 +164,10 @@ const handleScreenSize = async (req, res, next) => {
           screenSizes: [{ size: sizeString, count: 1 }],
           ipAddresses: [],
         });
-        await site.save();
       }
+      await site.save();
     }
+
     next();
   } catch (error) {
     next(error);
@@ -161,34 +177,35 @@ const handleScreenSize = async (req, res, next) => {
 const handleIpAddress = async (req, res, next) => {
   try {
     const { siteName, date, ipAddress } = req.body;
+    const site = await Site.findOneAndUpdate(
+      { name: siteName, 'traffic.date': date },
+      {
+        $inc: { 'traffic.$.visits': 1 },
+        $addToSet: {
+          'traffic.$.ipAddresses': { address: ipAddress, count: 1 },
+        },
+      },
+      { new: true },
+    );
 
-    const site = await Site.findOne({ name: siteName, 'traffic.date': date });
+    if (!site) {
+      const user = await User.findOne({ username: req.user.username });
+      const newSite = new Site({
+        name: siteName,
+        traffic: [
+          {
+            date,
+            visits: 1,
+            deviceTypes: { desktop: 0, mobile: 0, tablet: 0 },
+            screenSizes: [],
+            ipAddresses: [{ address: ipAddress, count: 1 }],
+          },
+        ],
+        user: user._id,
+      });
 
-    if (site) {
-      const trafficData = site.traffic.find(
-        (t) => t.date.toISOString() === date,
-      );
-      if (trafficData) {
-        const ipAddressData = trafficData.ipAddresses.find(
-          (ip) => ip.address === ipAddress,
-        );
-        if (ipAddressData) {
-          ipAddressData.count++;
-        } else {
-          trafficData.ipAddresses.push({ address: ipAddress, count: 1 });
-        }
-        await site.save();
-      } else {
-        // If trafficData is not found, create new trafficData object with the new IP address data
-        site.traffic.push({
-          date,
-          visits: 1,
-          deviceTypes: { desktop: 0, mobile: 0, tablet: 0 },
-          screenSizes: [],
-          ipAddresses: [{ address: ipAddress, count: 1 }],
-        });
-        await site.save();
-      }
+      user.sites.push(newSite._id);
+      await Promise.all([newSite.save(), user.save()]);
     }
 
     next();
