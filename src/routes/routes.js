@@ -23,6 +23,7 @@ router
     formatDateMiddleware,
     validateTrafficData,
     updateSiteData,
+    deleteDuplicateSites,
     trafficData,
   )
   .get(authenticateUser, getTrafficData);
