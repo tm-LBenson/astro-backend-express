@@ -27,8 +27,10 @@ const incrementVisits = async (req, res, next) => {
       await user.save();
     } else {
       const trafficData = site.traffic.find(
-        (t) => t.date.toISOString().split('T')[0] === date,
+        (t) =>
+          t.name === siteName && t.date.toISOString().split('T')[0] === date,
       );
+
       if (trafficData) {
         trafficData.visits++;
       } else {
@@ -68,10 +70,49 @@ const incrementDailyTotal = async (req, res, next) => {
 const handleDeviceType = async (req, res, next) => {
   try {
     const { siteName, date, deviceType } = req.body;
-    await Site.findOneAndUpdate(
-      { name: siteName, 'traffic.date': date },
-      { $inc: { [`traffic.$.deviceTypes.${deviceType}`]: 1 } },
-    );
+    const user = await User.findOne({ username: req.user.username });
+
+    let site = await Site.findOne({ name: siteName, user: user._id });
+
+    if (!site) {
+      site = new Site({
+        name: siteName,
+        traffic: [
+          {
+            date,
+            visits: 1,
+            deviceTypes: { [deviceType]: 1 },
+            screenSizes: [],
+            ipAddresses: [],
+          },
+        ],
+        user: user._id,
+      });
+
+      user.sites.push(site._id);
+      await user.save();
+    } else {
+      const trafficData = site.traffic.find(
+        (t) =>
+          t.name === siteName && t.date.toISOString().split('T')[0] === date,
+      );
+
+      if (trafficData) {
+        trafficData.visits++;
+        trafficData.deviceTypes[deviceType]++;
+      } else {
+        site.traffic.push({
+          date,
+          visits: 1,
+          deviceTypes: { [deviceType]: 1 },
+          screenSizes: [],
+          ipAddresses: [],
+        });
+      }
+    }
+
+    await site.save();
+
     next();
   } catch (error) {
     next(error);
@@ -98,6 +139,16 @@ const handleScreenSize = async (req, res, next) => {
         } else {
           trafficData.screenSizes.push({ size: sizeString, count: 1 });
         }
+        await site.save();
+      } else {
+        // If trafficData is not found, create new trafficData object with the new screen size data
+        site.traffic.push({
+          date,
+          visits: 1,
+          deviceTypes: { desktop: 0, mobile: 0, tablet: 0 },
+          screenSizes: [{ size: sizeString, count: 1 }],
+          ipAddresses: [],
+        });
         await site.save();
       }
     }
@@ -126,6 +177,16 @@ const handleIpAddress = async (req, res, next) => {
         } else {
           trafficData.ipAddresses.push({ address: ipAddress, count: 1 });
         }
+        await site.save();
+      } else {
+        // If trafficData is not found, create new trafficData object with the new IP address data
+        site.traffic.push({
+          date,
+          visits: 1,
+          deviceTypes: { desktop: 0, mobile: 0, tablet: 0 },
+          screenSizes: [],
+          ipAddresses: [{ address: ipAddress, count: 1 }],
+        });
         await site.save();
       }
     }
