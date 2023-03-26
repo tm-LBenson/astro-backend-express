@@ -6,63 +6,41 @@ const updateSiteData = async (req, res, next) => {
     const { siteName, date, deviceType, screenSize, ipAddress } = req.body;
     const user = await User.findOne({ username: req.user.username });
 
-    let site = await Site.findOne({ name: siteName, user: user._id });
+    const sizeString = `${screenSize.width}x${screenSize.height}`;
+
+    const site = await Site.findOneAndUpdate(
+      { name: siteName, user: user._id, 'traffic.date': date },
+      {
+        $inc: {
+          'traffic.$.visits': 1,
+          [`traffic.$.deviceTypes.${deviceType}`]: 1,
+        },
+        $addToSet: {
+          'traffic.$.screenSizes': { size: sizeString, count: 1 },
+          'traffic.$.ipAddresses': { address: ipAddress, count: 1 },
+        },
+      },
+      { new: true },
+    );
 
     if (!site) {
-      site = new Site({
+      const newSite = new Site({
         name: siteName,
         traffic: [
           {
             date,
             visits: 1,
-            deviceTypes: { desktop: 0, mobile: 0, tablet: 0 },
-            screenSizes: [],
-            ipAddresses: [],
+            deviceTypes: { [deviceType]: 1 },
+            screenSizes: [{ size: sizeString, count: 1 }],
+            ipAddresses: [{ address: ipAddress, count: 1 }],
           },
         ],
         user: user._id,
       });
 
-      user.sites.push(site._id);
-    } else {
-      const trafficData = site.traffic.find(
-        (t) => t.date.toISOString().split('T')[0] === date,
-      );
-
-      if (trafficData) {
-        trafficData.visits++;
-        trafficData.deviceTypes[deviceType]++;
-
-        const screenSizeData = trafficData.screenSizes.find(
-          (s) => s.size === screenSize,
-        );
-        if (screenSizeData) {
-          screenSizeData.count++;
-        } else {
-          trafficData.screenSizes.push({ size: screenSize, count: 1 });
-        }
-
-        const ipAddressData = trafficData.ipAddresses.find(
-          (ip) => ip.address === ipAddress,
-        );
-        if (ipAddressData) {
-          ipAddressData.count++;
-        } else {
-          trafficData.ipAddresses.push({ address: ipAddress, count: 1 });
-        }
-      } else {
-        site.traffic.push({
-          date,
-          visits: 1,
-          deviceTypes: { [deviceType]: 1 },
-          screenSizes: [{ size: screenSize, count: 1 }],
-          ipAddresses: [{ address: ipAddress, count: 1 }],
-        });
-      }
+      user.sites.push(newSite._id);
+      await Promise.all([newSite.save(), user.save()]);
     }
-
-    await site.save();
-    await user.save();
 
     next();
   } catch (error) {
