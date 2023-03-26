@@ -1,3 +1,5 @@
+const { User, Site } = require('../models/analyticsModel');
+
 const deleteDuplicateSites = async (req, res, next) => {
   try {
     const { username } = req.user;
