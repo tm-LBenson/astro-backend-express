@@ -20,17 +20,19 @@ const updateSiteData = async (req, res, next) => {
       await user.save();
     }
 
+    const today = new Date(date).setUTCHours(0, 0, 0, 0);
     const trafficEntry = await Site.findOneAndUpdate(
       {
-        _id: site._id,
-        'traffic.date': date,
+        name: siteName,
+        user: user._id,
+        'traffic.date': today,
         'traffic.ipAddresses.address': ipAddress,
       },
       {
         $inc: {
           'traffic.$.visits': 1,
           [`traffic.$.deviceTypes.${deviceType}`]: 1,
-          'traffic.$[ip].count': 1,
+          'traffic.$.ipAddresses.$[ip].count': 1,
         },
       },
       {
