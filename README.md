@@ -2,7 +2,7 @@
 
 ## About the App
 
-This is an Express app that includes several endpoints for handling traffic data and user authentication. The app uses Mongoose to connect to a MongoDB database and has error handling middleware for 404 and 500 errors.
+This Express app is designed to handle the traffic for several applications in a scaled deployment environment. It uses Mongoose to connect to a MongoDB database and has endpoints for updating and retrieving traffic data, as well as user authentication. The app also includes error handling middleware for 404 and 500 errors. Its flexibility and scalability make it ideal for handling large amounts of traffic across multiple applications.
 
 ## Endpoints
 
