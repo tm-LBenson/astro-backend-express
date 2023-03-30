@@ -28,22 +28,28 @@ const updateSiteData = async (req, res, next) => {
     });
 
     if (trafficEntry) {
-      const ipIndex = trafficEntry.traffic[0].ipAddresses.findIndex(
+      const trafficIndex = trafficEntry.traffic.findIndex(
+        (entry) => new Date(entry.date).setUTCHours(0, 0, 0, 0) === today,
+      );
+
+      const ipIndex = trafficEntry.traffic[trafficIndex].ipAddresses.findIndex(
         (ip) => ip.address === ipAddress,
       );
-      const screenSizeIndex = trafficEntry.traffic[0].screenSizes.findIndex(
-        (size) => size.size === sizeString,
-      );
+      const screenSizeIndex = trafficEntry.traffic[
+        trafficIndex
+      ].screenSizes.findIndex((size) => size.size === sizeString);
 
       if (ipIndex !== -1) {
-        trafficEntry.traffic[0].ipAddresses[ipIndex].count += 1;
-        trafficEntry.traffic[0].visits += 1;
-        trafficEntry.traffic[0].deviceTypes[deviceType] += 1;
+        trafficEntry.traffic[trafficIndex].ipAddresses[ipIndex].count += 1;
+        trafficEntry.traffic[trafficIndex].visits += 1;
+        trafficEntry.traffic[trafficIndex].deviceTypes[deviceType] += 1;
 
         if (screenSizeIndex !== -1) {
-          trafficEntry.traffic[0].screenSizes[screenSizeIndex].count += 1;
+          trafficEntry.traffic[trafficIndex].screenSizes[
+            screenSizeIndex
+          ].count += 1;
         } else {
-          trafficEntry.traffic[0].screenSizes.push({
+          trafficEntry.traffic[trafficIndex].screenSizes.push({
             size: sizeString,
             count: 1,
           });
@@ -51,16 +57,16 @@ const updateSiteData = async (req, res, next) => {
 
         await trafficEntry.save();
       } else {
-        trafficEntry.traffic[0].ipAddresses.push({
+        trafficEntry.traffic[trafficIndex].ipAddresses.push({
           address: ipAddress,
           count: 1,
         });
-        trafficEntry.traffic[0].screenSizes.push({
+        trafficEntry.traffic[trafficIndex].screenSizes.push({
           size: sizeString,
           count: 1,
         });
-        trafficEntry.traffic[0].visits += 1;
-        trafficEntry.traffic[0].deviceTypes[deviceType] += 1;
+        trafficEntry.traffic[trafficIndex].visits += 1;
+        trafficEntry.traffic[trafficIndex].deviceTypes[deviceType] += 1;
 
         await trafficEntry.save();
       }
