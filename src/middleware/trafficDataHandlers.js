@@ -112,8 +112,8 @@ const getUserSites = async (req, res) => {
       let sites = await Site.find({ _id: { $in: user.sites } });
 
       const combinePromises = sites.map((site) => combineDuplicateDates(site));
-      await Promise.all(combinePromises);
 
+      await Promise.all(combinePromises);
       res.status(200).json(sites);
     } else {
       res.status(404).json({ message: 'User not found.' });
