@@ -3,16 +3,20 @@ const proofOfLife = require('../controllers/proofOfLife');
 const { trafficData, getTrafficData } = require('../controllers/trafficData');
 const contact = require('../controllers/contact');
 const validateTrafficData = require('../middleware/validateTrafficData');
-const {
-  getUserSites,
-  updateSiteData,
-} = require('../middleware/trafficDataHandlers');
+
 const formatDateMiddleware = require('../middleware/formatDate');
 const { loginUser, registerUser } = require('../controllers/authController');
 
 const authenticateUser = require('../middleware/authMiddleware');
 const validateClientId = require('../middleware/validateClientId');
 const deleteDuplicateSites = require('../middleware/deleteDuplicateSites');
+const {
+  getUserSites,
+} = require('../middleware/trafficDataHandlers/getUserSites');
+const {
+  updateSiteData,
+} = require('../middleware/trafficDataHandlers/updateSiteData');
+
 const router = express.Router();
 
 router.route('/').get(proofOfLife);
