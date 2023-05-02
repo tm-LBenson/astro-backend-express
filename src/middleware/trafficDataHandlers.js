@@ -1,5 +1,6 @@
 // middleware/trafficDataHandlers.js
 const { Site, DailyTotal, User } = require('../models/analyticsModel');
+const { combineDuplicateDates } = require('./combineDuplicateDates ');
 
 const updateSiteData = async (req, res, next) => {
   try {
@@ -108,7 +109,10 @@ const getUserSites = async (req, res) => {
     const user = await User.findOne({ username });
 
     if (user) {
-      const sites = await Site.find({ _id: { $in: user.sites } });
+      let sites = await Site.find({ _id: { $in: user.sites } });
+
+      const combinePromises = sites.map((site) => combineDuplicateDates(site));
+      await Promise.all(combinePromises);
 
       res.status(200).json(sites);
     } else {
