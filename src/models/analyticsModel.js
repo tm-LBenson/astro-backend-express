@@ -1,3 +1,4 @@
+// analyticsModel.js
 const mongoose = require('mongoose');
 
 const screenSizeSchema = new mongoose.Schema({
@@ -5,8 +6,11 @@ const screenSizeSchema = new mongoose.Schema({
   count: Number,
 });
 
-const ipAddressSchema = new mongoose.Schema({
-  address: String,
+// Define new location schema
+const locationSchema = new mongoose.Schema({
+  city: String,
+  region: String,
+  country: String,
   count: Number,
 });
 
@@ -19,7 +23,7 @@ const trafficDataSchema = new mongoose.Schema({
     tablet: { type: Number, default: 0 },
   },
   screenSizes: [screenSizeSchema],
-  ipAddresses: [ipAddressSchema],
+  locations: [locationSchema], // Use new location schema instead of IP Addresses
 });
 
 const siteSchema = new mongoose.Schema({
