@@ -1,9 +1,8 @@
-// middleware/validateTrafficData.js
 const validDeviceTypes = ['desktop', 'mobile', 'tablet'];
-
 const validateTrafficData = (req, res, next) => {
-  const { siteName, date, deviceType, screenSize, ipAddress } = req.body;
-
+  const { siteName, date, deviceType, screenSize, location, noConsent } =
+    req.body;
+  console.log(noConsent);
   if (!siteName || typeof siteName !== 'string') {
     console.error({ message: 'Invalid site name.' });
     return res.status(400).json({ message: 'Invalid site name.' });
@@ -12,6 +11,10 @@ const validateTrafficData = (req, res, next) => {
   if (!date || isNaN(Date.parse(date))) {
     console.error({ message: 'Invalid date.' });
     return res.status(400).json({ message: 'Invalid date.' });
+  }
+
+  if (noConsent) {
+    return next();
   }
 
   if (!deviceType || !validDeviceTypes.includes(deviceType)) {
@@ -24,9 +27,9 @@ const validateTrafficData = (req, res, next) => {
     return res.status(400).json({ message: 'Invalid screen size.' });
   }
 
-  if (!ipAddress || typeof ipAddress !== 'string') {
-    console.error({ message: 'Invalid IP address.' });
-    return res.status(400).json({ message: 'Invalid IP address.' });
+  if (!location || typeof location !== 'object') {
+    console.error({ message: 'Invalid location.' });
+    return res.status(400).json({ message: 'Invalid location.' });
   }
 
   next();
