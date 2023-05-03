@@ -7,7 +7,7 @@ const updateSiteData = async (req, res, next) => {
       req.body;
 
     const user = await User.findOne({ username: req.user.username });
-    console.log(noConsent);
+    
     const sizeString = noConsent
       ? ''
       : `${screenSize.width}x${screenSize.height}`;
