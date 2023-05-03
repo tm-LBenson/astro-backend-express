@@ -11,6 +11,8 @@ const getLocationData = async (ipAddress) => {
       country: data.country_name,
       region: data.region,
       city: data.city,
+      latitude: data.latitude,
+      longitude: data.longitude,
     };
   } catch (error) {
     console.error('Error getting location data: ', error);

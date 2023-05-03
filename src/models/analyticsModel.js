@@ -12,6 +12,8 @@ const locationSchema = new mongoose.Schema({
   region: String,
   country: String,
   count: Number,
+  latitude: Number,
+  longitude: Number,
 });
 
 const trafficDataSchema = new mongoose.Schema({
