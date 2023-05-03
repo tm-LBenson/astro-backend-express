@@ -1,8 +1,32 @@
 const validDeviceTypes = ['desktop', 'mobile', 'tablet'];
-const validateTrafficData = (req, res, next) => {
-  const { siteName, date, deviceType, screenSize, location, noConsent } =
-    req.body;
-  console.log(noConsent);
+
+const getLocationData = async (ipAddress) => {
+  try {
+    const response = await fetch(`https://ipapi.co/${ipAddress}/json/`);
+    const data = await response.json();
+
+
+    return {
+      country: data.country_name,
+      region: data.region,
+      city: data.city,
+    };
+  } catch (error) {
+    console.error('Error getting location data: ', error);
+    return null;
+  }
+};
+
+const validateTrafficData = async (req, res, next) => {
+  const {
+    siteName,
+    date,
+    deviceType,
+    screenSize,
+    location,
+    ipAddress,
+    noConsent,
+  } = req.body;
   if (!siteName || typeof siteName !== 'string') {
     console.error({ message: 'Invalid site name.' });
     return res.status(400).json({ message: 'Invalid site name.' });
@@ -27,9 +51,13 @@ const validateTrafficData = (req, res, next) => {
     return res.status(400).json({ message: 'Invalid screen size.' });
   }
 
-  if (!location || typeof location !== 'object') {
-    console.error({ message: 'Invalid location.' });
-    return res.status(400).json({ message: 'Invalid location.' });
+  if ((location && ipAddress) || (!location && !ipAddress)) {
+    console.error({ message: 'Invalid location or IP address.' });
+    return res.status(400).json({ message: 'Invalid location or IP address.' });
+  }
+
+  if (ipAddress && typeof ipAddress === 'string') {
+    req.body.location = await getLocationData(ipAddress);
   }
 
   next();
