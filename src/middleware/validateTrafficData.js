@@ -1,10 +1,11 @@
+const axios = require('axios');
+
 const validDeviceTypes = ['desktop', 'mobile', 'tablet'];
 
 const getLocationData = async (ipAddress) => {
   try {
-    const response = await fetch(`https://ipapi.co/${ipAddress}/json/`);
+    const response = await axios(`https://ipapi.co/${ipAddress}/json/`);
     const data = await response.json();
-
 
     return {
       country: data.country_name,
