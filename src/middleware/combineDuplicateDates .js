@@ -1,6 +1,6 @@
 const combineTrafficData = (entry1, entry2) => {
   const combinedScreenSizes = entry1.screenSizes.concat(entry2.screenSizes);
-  const combinedIpAddresses = entry1.ipAddresses.concat(entry2.ipAddresses);
+  const combinedLocations = entry1.locations.concat(entry2.locations);
 
   return {
     date: entry1.date,
@@ -11,9 +11,10 @@ const combineTrafficData = (entry1, entry2) => {
       tablet: entry1.deviceTypes.tablet + entry2.deviceTypes.tablet,
     },
     screenSizes: combinedScreenSizes,
-    ipAddresses: combinedIpAddresses,
+    locations: combinedLocations,
   };
 };
+
 
 const combineDuplicateDates = async (site) => {
   try {
