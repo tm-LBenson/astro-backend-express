@@ -16,11 +16,13 @@ const {
 const {
   updateSiteData,
 } = require('../middleware/trafficDataHandlers/updateSiteData');
+const slackMessage = require('../controllers/slackMessage');
 
 const router = express.Router();
 
 router.route('/').get(proofOfLife);
 router.route('/contact').post(contact);
+router.route('/slack-message').post(slackMessage);
 router
   .route('/traffic-data')
   .post(
@@ -29,7 +31,7 @@ router
     validateTrafficData,
     updateSiteData,
     deleteDuplicateSites,
-    trafficData,
+    trafficData
   )
   .get(authenticateUser, getTrafficData);
 router.get('/user-sites', authenticateUser, getUserSites);
