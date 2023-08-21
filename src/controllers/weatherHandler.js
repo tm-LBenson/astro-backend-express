@@ -8,9 +8,9 @@ async function weatherHandler(req, res, next) {
     let endpoint = '';
 
     if (/^\d+$/.test(q)) {
-      endpoint = `https://api.weatherbit.io/v2.0/forecast/daily?postal_code=${q}&country=US&days=6`;
+      endpoint = `https://api.weatherbit.io/v2.0/forecast/daily?postal_code=${q}&country=US&days=6&units=I`;
     } else {
-      endpoint = `https://api.weatherbit.io/v2.0/forecast/daily?city=${q}&days=6`;
+      endpoint = `https://api.weatherbit.io/v2.0/forecast/daily?city=${q}&days=6&units=I`;
     }
     console.log(endpoint + '&key=' + WEATHER_BIT);
     const results = await axios.get(endpoint + '&key=' + WEATHER_BIT);
