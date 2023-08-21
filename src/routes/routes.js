@@ -17,10 +17,12 @@ const {
   updateSiteData,
 } = require('../middleware/trafficDataHandlers/updateSiteData');
 const slackMessage = require('../controllers/slackMessage');
+const weatherHandler = require('../controllers/weatherHandler');
 
 const router = express.Router();
 
 router.route('/').get(proofOfLife);
+router.route('/weather').get(weatherHandler);
 router.route('/contact').post(contact);
 router.route('/slack-message').post(slackMessage);
 router
