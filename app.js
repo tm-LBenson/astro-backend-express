@@ -1,3 +1,4 @@
+'use strict';
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -13,22 +14,36 @@ app.use(cors());
 // Parse JSON request bodies
 app.use(express.json());
 
-// Connect to MongoDB using Mongoose
 mongoose.set('strictQuery', true);
 
-async function connectToMongoDB() {
-  try {
-    await mongoose.connect(process.env.DB_URL, {
-      useNewUrlParser: true,
-      bufferCommands: false,
-    });
-    console.log('Connected to MongoDB');
-  } catch (error) {
-    console.error(error);
-  }
-}
+// Create connections to two different MongoDB databases
+const analyticsDB = mongoose.createConnection(process.env.DB_URL, {
+  useNewUrlParser: true,
+  bufferCommands: false,
+  // other options...
+});
 
-connectToMongoDB();
+analyticsDB.on('connected', () => {
+  console.log('Connected to Analytics MongoDB');
+});
+
+analyticsDB.on('error', (err) => {
+  console.error('Error connecting to Analytics MongoDB:', err);
+});
+
+const summaryDB = mongoose.createConnection(process.env.SUMMARY_DB_URL, {
+  useNewUrlParser: true,
+  bufferCommands: false,
+  // other options...
+});
+
+summaryDB.on('connected', () => {
+  console.log('Connected to Summary MongoDB');
+});
+
+summaryDB.on('error', (err) => {
+  console.error('Error connecting to Summary MongoDB:', err);
+});
 
 // Routes
 app.use(router);
