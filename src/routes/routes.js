@@ -19,6 +19,8 @@ const {
 const slackMessage = require('../controllers/slackMessage');
 const weatherHandler = require('../controllers/weatherHandler');
 const summarySheet = require('../controllers/summarySheet');
+const checkForID = require('../middleware/summarySheets/checkForID');
+const updateClassData = require('../middleware/summarySheets/updateClassData');
 
 const router = express.Router();
 
@@ -40,5 +42,5 @@ router
 router.get('/user-sites', authenticateUser, getUserSites);
 router.post('/login', loginUser);
 router.post('/signup', registerUser);
-router.post('/summary-sheets', summarySheet);
+router.post('/summary-sheets', checkForID, updateClassData, summarySheet);
 module.exports = router;
