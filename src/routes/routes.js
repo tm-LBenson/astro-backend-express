@@ -18,6 +18,7 @@ const {
 } = require('../middleware/trafficDataHandlers/updateSiteData');
 const slackMessage = require('../controllers/slackMessage');
 const weatherHandler = require('../controllers/weatherHandler');
+const summarySheet = require('../controllers/summarySheet');
 
 const router = express.Router();
 
@@ -39,4 +40,5 @@ router
 router.get('/user-sites', authenticateUser, getUserSites);
 router.post('/login', loginUser);
 router.post('/signup', registerUser);
+router.post('/summary-sheets', summarySheet);
 module.exports = router;
