@@ -1,5 +1,6 @@
 // analyticsModel.js
 const mongoose = require('mongoose');
+const { analyticsDB } = require('../../database');
 
 const screenSizeSchema = new mongoose.Schema({
   size: String,
@@ -31,7 +32,11 @@ const trafficDataSchema = new mongoose.Schema({
 const siteSchema = new mongoose.Schema({
   name: String,
   traffic: [trafficDataSchema],
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
 });
 
 const dailyTotalSchema = new mongoose.Schema({
@@ -47,9 +52,9 @@ const userSchema = new mongoose.Schema({
   clientId: { type: String, unique: true, required: true },
 });
 
-const Site = mongoose.model('Site', siteSchema);
-const DailyTotal = mongoose.model('DailyTotal', dailyTotalSchema);
-const User = mongoose.model('User', userSchema);
+const Site = analyticsDB.model('Site', siteSchema);
+const DailyTotal = analyticsDB.model('DailyTotal', dailyTotalSchema);
+const User = analyticsDB.model('User', userSchema);
 
 module.exports = {
   Site,
