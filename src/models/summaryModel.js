@@ -12,7 +12,7 @@ const CourseworkSchema = new mongoose.Schema({
 
 const StudentSchema = new mongoose.Schema({
   name: String,
-  email: String, // No validation needed, assuming Google account emails are used
+  email: String, 
   coursework: [CourseworkSchema],
   notes: String,
 });
