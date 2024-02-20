@@ -25,6 +25,7 @@ const getSummaryData = require('../controllers/summary/summarySheet');
 const updateCoursework = require('../controllers/summary/updateCoursework');
 const addStudent = require('../controllers/summary/addStudent');
 const addCoursework = require('../controllers/summary/addCoursework');
+const deleteClass = require('../controllers/summary/deleteClass');
 
 const router = express.Router();
 
@@ -57,5 +58,6 @@ router
   .patch(updateCoursework)
   .post(addCoursework);
 router.post('/summary-sheets/student', addStudent);
+router.delete('/summary-sheets/:classId', deleteClass);
 
 module.exports = router;
