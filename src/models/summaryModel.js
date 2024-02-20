@@ -2,17 +2,21 @@
 
 const mongoose = require('mongoose');
 const { summaryDB } = require('../../database');
-
+const WeeklyNotesSchema = new mongoose.Schema({
+  class: String,
+  note: String,
+});
 const CourseworkSchema = new mongoose.Schema({
   type: String,
   topic: String,
   result: String,
   attendance: String,
+  notes: [WeeklyNotesSchema],
 });
 
 const StudentSchema = new mongoose.Schema({
   name: String,
-  email: String, 
+  email: String,
   coursework: [CourseworkSchema],
   notes: String,
 });

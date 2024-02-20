@@ -22,6 +22,9 @@ const summarySheet = require('../controllers/summary/summarySheet');
 const checkForID = require('../middleware/summarySheets/checkForID');
 const updateClassData = require('../middleware/summarySheets/updateClassData');
 const getSummaryData = require('../controllers/summary/summarySheet');
+const updateCoursework = require('../controllers/summary/updateCoursework');
+const addStudent = require('../controllers/summary/addStudent');
+const addCoursework = require('../controllers/summary/addCoursework');
 
 const router = express.Router();
 
@@ -43,8 +46,16 @@ router
 router.get('/user-sites', authenticateUser, getUserSites);
 router.post('/login', loginUser);
 router.post('/signup', registerUser);
+
+// Summary APP
 router
   .route('/summary-sheets')
   .post(checkForID, updateClassData, summarySheet)
   .get(getSummaryData);
+router
+  .route('/summary-sheets/student/coursework')
+  .patch(updateCoursework)
+  .post(addCoursework);
+router.post('/summary-sheets/student', addStudent);
+
 module.exports = router;
