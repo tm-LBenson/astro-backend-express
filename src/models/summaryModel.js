@@ -10,6 +10,7 @@ const CourseworkSchema = new mongoose.Schema({
   type: String,
   topic: String,
   result: String,
+  status: String,
   attendance: String,
   notes: [WeeklyNotesSchema],
 });
