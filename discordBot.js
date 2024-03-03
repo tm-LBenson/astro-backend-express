@@ -1,9 +1,9 @@
 'use strict';
-require('dotenv').config();
-const fs = require('fs');
-const { Client, GatewayIntentBits } = require('discord.js');
-const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 function initializeDiscordBot() {
+  require('dotenv').config();
+  const fs = require('fs');
+  const { Client, GatewayIntentBits } = require('discord.js');
+  const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
   const client = new Client({
     intents: [
       GatewayIntentBits.Guilds,
