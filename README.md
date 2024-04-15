@@ -50,7 +50,7 @@ The `/signup` endpoint is used to create a new user account. To use this endpoin
 - `email`: the email address of the user
 - `password`: the password of the user
 
-## Add support for certain discord bots
+## Add support for tom-roles discord bot, running through NPM
 
 ## Environment Variables
 
