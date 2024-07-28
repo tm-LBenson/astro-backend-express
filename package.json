@@ -15,7 +15,7 @@
     "mongoose": "^7.0.2",
     "nodemailer": "^6.9.1",
     "t-roles": "^1.0.1",
-    "tom-roles": "^1.1.29"
+    "tom-roles": "^2.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
