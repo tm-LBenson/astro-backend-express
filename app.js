@@ -26,9 +26,6 @@ app.use(handle404Error);
 // 500 Error Handler
 app.use(handle500Error);
 
-// Start discord bot
-require('tom-roles');
-require('t-roles');
 // Start the server
 const port = process.env.PORT || 3002;
 app.listen(port, () => {
